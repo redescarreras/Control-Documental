@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bgGradient192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0056b3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003d80;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fondo redondeado para 192x192 -->
+  <rect x="12" y="12" width="168" height="168" rx="32" ry="32" fill="url(#bgGradient192)"/>
+  
+  <!-- Borde interior -->
+  <rect x="18" y="18" width="156" height="156" rx="28" ry="28" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  
+  <!-- Texto RC -->
+  <text x="60" y="125" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="80" 
+        font-weight="bold" 
+        fill="white">R</text>
+  
+  <text x="132" y="125" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="80" 
+        font-weight="bold" 
+        fill="white">C</text>
+  
+  <!-- Punto decorativo -->
+  <circle cx="96" cy="155" r="5" fill="rgba(255,255,255,0.4)"/>
+</svg>

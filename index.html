@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Control Documental - Redes Carreras SL">
+    <meta name="theme-color" content="#E31E24">
+    <title>Redes Carreras SL - Control Documental v1.0</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Redes Carreras SL" class="company-logo">
+                <div class="company-info">
+                    <h1>Redes Carreras SL</h1>
+                    <span class="app-subtitle">Control Documental v1.0</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="btnExportPDF" class="btn btn-secondary" title="Exportar a PDF">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <span class="btn-text">PDF</span>
+            </button>
+            <button id="btnInstall" class="btn btn-install hidden" title="Instalar App">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span class="btn-text">Instalar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Alertas de caducidad -->
+    <div id="alertContainer" class="alert-container"></div>
+
+    <!-- Panel de control -->
+    <section class="control-panel">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statTotal">0</span>
+                    <span class="stat-label">Total Documentos</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statWarning">0</span>
+                    <span class="stat-label">Próximos 30 días</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon danger">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statExpired">0</span>
+                    <span class="stat-label">Caducados</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="filters-section">
+            <div class="search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar documentos, responsables o ubicaciones...">
+            </div>
+            <div class="filter-box">
+                <select id="categoryFilter">
+                    <option value="">Todas las categorías</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lista de documentos -->
+    <main class="main-content">
+        <div class="section-header">
+            <h2>Documentos y Certificados</h2>
+            <span class="item-count" id="itemCount">0 documentos</span>
+        </div>
+        <div id="materialsList" class="materials-grid">
+            <!-- Los documentos se cargarán aquí dinámicamente -->
+        </div>
+        <div id="emptyState" class="empty-state">
+            <div class="empty-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="11" x2="12" y2="17"/>
+                    <line x1="9" y1="14" x2="15" y2="14"/>
+                </svg>
+            </div>
+            <h3>Sin documentos registrados</h3>
+            <p>Añade tu primer documento o certificado usando el botón de abajo.</p>
+            <button class="btn btn-primary btn-lg" onclick="openAddModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Añadir Documento
+            </button>
+        </div>
+    </main>
+
+    <!-- Botón flotante para añadir -->
+    <button id="fabAdd" class="fab" title="Añadir nuevo documento" onclick="openAddModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    </button>
+
+    <!-- Modal de añadir/editar documento -->
+    <div id="materialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Añadir Documento</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="materialForm">
+                <input type="hidden" id="materialId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="materialCategory">Categoría *</label>
+                        <select id="materialCategory" required>
+                            <option value="">Seleccionar categoría</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="materialName">Nombre del documento *</label>
+                        <input type="text" id="materialName" placeholder="Ej: Certificado REA" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="materialStart">Fecha de emisión *</label>
+                        <input type="date" id="materialStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="materialExpiry">Fecha de caducidad *</label>
+                        <input type="date" id="materialExpiry" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="materialResponsible">Responsable (opcional)</label>
+                        <input type="text" id="materialResponsible" placeholder="Nombre del responsable">
+                    </div>
+                    <div class="form-group">
+                        <label for="materialVan">Ubicación (opcional)</label>
+                        <input type="text" id="materialVan" placeholder="Ej: Oficina, Furgoneta 1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="materialNotes">Notas adicionales (opcional)</label>
+                    <textarea id="materialNotes" rows="3" placeholder="Observaciones, referencias, números de registro..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Documento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de detalles -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content modal-detail">
+            <div class="modal-header">
+                <h2>Detalles del Documento</h2>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div id="detailContent" class="detail-content">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-danger" id="btnDeleteMaterial">Eliminar</button>
+                <button type="button" class="btn btn-primary" id="btnEditMaterial">Editar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p class="company-name">Redes Carreras SL</p>
+                <p class="footer-note">Control Documental v1.0</p>
+            </div>
+            <div class="footer-right">
+                <p class="storage-info">Datos almacenados localmente</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        // Verificar que jsPDF esté cargado
+        if (typeof jspdf === 'undefined') {
+            console.warn('jsPDF no cargado desde CDN');
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
