@@ -120,6 +120,17 @@ function setupEventListeners() {
     // Exportar PDF
     document.getElementById('btnExportPDF').addEventListener('click', generatePDF);
 
+    // Backup - Exportar
+    document.getElementById('btnBackup').addEventListener('click', exportBackup);
+
+    // Backup - Importar
+    document.getElementById('btnRestore').addEventListener('click', () => {
+        document.getElementById('fileImport').click();
+    });
+
+    // Archivo de importación
+    document.getElementById('fileImport').addEventListener('change', handleFileImport);
+
     // Instalación PWA
     document.getElementById('btnInstall').addEventListener('click', installPWA);
 
@@ -1007,6 +1018,126 @@ function installPWA() {
         }
         deferredPrompt = null;
     });
+}
+
+// ============================================
+// BACKUP Y RESTAURACIÓN
+// ============================================
+
+/**
+ * Exporta todos los documentos a un archivo JSON
+ */
+function exportBackup() {
+    try {
+        const backupData = {
+            version: '2.0.0',
+            exportDate: new Date().toISOString(),
+            appName: 'Redes Carreras SL - Control Documental',
+            totalDocuments: materials.length,
+            documents: materials
+        };
+
+        // Convertir a JSON con formato bonito
+        const jsonString = JSON.stringify(backupData, null, 2);
+        
+        // Crear blob y descargar
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Redes_Carreras_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        showToast(`Backup exportado (${materials.length} documentos)`, 'success');
+    } catch (error) {
+        console.error('Error al exportar backup:', error);
+        showToast('Error al exportar el backup', 'error');
+    }
+}
+
+/**
+ * Maneja la selección del archivo de importación
+ */
+function handleFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            importBackup(data);
+        } catch (error) {
+            console.error('Error al leer archivo:', error);
+            showToast('Error: El archivo no es válido', 'error');
+        }
+    };
+    
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input
+}
+
+/**
+ * Importa documentos desde un backup
+ */
+function importBackup(data) {
+    // Validar estructura del backup
+    if (!data.documents || !Array.isArray(data.documents)) {
+        showToast('Error: Formato de backup inválido', 'error');
+        return;
+    }
+    
+    // Contar documentos válidos
+    const validDocuments = data.documents.filter(doc => 
+        doc.id && 
+        doc.categoria && 
+        doc.nombre && 
+        doc.fecha_inicio && 
+        doc.fecha_caducidad
+    );
+    
+    if (validDocuments.length === 0) {
+        showToast('Error: No hay documentos válidos en el backup', 'error');
+        return;
+    }
+    
+    // Preguntar si quiere añadir a los existentes o reemplazar
+    const action = confirm(
+        `Se encontraron ${validDocuments.length} documentos válidos en el backup.\n\n` +
+        `¿Deseas AÑADIR estos documentos a los existentes?\n` +
+        `Cancela para REEMPLAZAR todos los documentos actuales.`
+    );
+    
+    if (action) {
+        // Añadir al existente
+        const newDocuments = validDocuments.map(doc => ({
+            ...doc,
+            id: generateId(), // Nuevos IDs para evitar conflictos
+            nombre: doc.nombre + ' (Importado)'
+        }));
+        materials = [...materials, ...newDocuments];
+        showToast(`Añadidos ${newDocuments.length} documentos`, 'success');
+    } else {
+        // Reemplazar
+        if (confirm('¿Estás seguro? Se eliminarán todos los documentos actuales.')) {
+            materials = validDocuments;
+            showToast(`Restaurados ${materials.length} documentos`, 'success');
+        } else {
+            showToast('Importación cancelada', 'info');
+            return;
+        }
+    }
+    
+    // Guardar y actualizar UI
+    saveMaterials();
+    renderMaterials();
+    updateStats();
+    checkExpiringItems();
 }
 
 // ============================================

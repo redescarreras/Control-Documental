@@ -36,13 +36,30 @@
                 </svg>
                 <span class="btn-text">PDF</span>
             </button>
-            <button id="btnInstall" class="btn btn-install hidden" title="Instalar App">
+            <button id="btnBackup" class="btn btn-secondary" title="Exportar Backup">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                <span class="btn-text">Instalar</span>
+                <span class="btn-text">Backup</span>
+            </button>
+            <button id="btnRestore" class="btn btn-secondary" title="Importar Backup">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span class="btn-text">Restaurar</span>
+            </button>
+            <input type="file" id="fileImport" accept=".json" style="display: none;">
+            <button id="btnInstall" class="btn btn-install hidden" title="Instalar App">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                <span class="btn-text">App</span>
             </button>
         </div>
     </header>
